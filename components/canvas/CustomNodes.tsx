@@ -2,7 +2,7 @@ import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
-import { Box, Layers, Cpu, FileText, Map, ShieldCheck, Trash2 } from 'lucide-react';
+import { Box, Layers, Cpu, FileText, Map, ShieldCheck, Trash2, ClipboardList, GitCommit, Table, AlertTriangle, LayoutTemplate, PieChart, Scale, Flag, Type, SplitSquareHorizontal, Heading, TextQuote } from 'lucide-react';
 
 const icons: Record<string, React.ReactNode> = {
   competitorRadar: <Map className="w-4 h-4 text-blue-500" />,
@@ -11,11 +11,22 @@ const icons: Record<string, React.ReactNode> = {
   userStoryMap: <Layers className="w-4 h-4 text-orange-500" />,
   milestoneRoadmap: <Cpu className="w-4 h-4 text-red-500" />,
   compliance: <ShieldCheck className="w-4 h-4 text-teal-500" />,
+  userRequirements: <ClipboardList className="w-4 h-4 text-indigo-500" />,
+  stepBar: <GitCommit className="w-4 h-4 text-pink-500" />,
+  table: <Table className="w-4 h-4 text-slate-500" />,
+  techRiskFmea: <AlertTriangle className="w-4 h-4 text-rose-500" />,
+  productPrototype: <LayoutTemplate className="w-4 h-4 text-cyan-500" />,
+  compAnalysis: <PieChart className="w-4 h-4 text-amber-500" />,
+  compComparison: <Scale className="w-4 h-4 text-lime-600" />,
+  mpStages: <Flag className="w-4 h-4 text-emerald-500" />,
+  textBlock: <Type className="w-4 h-4 text-slate-600" />,
+  divider: <SplitSquareHorizontal className="w-4 h-4 text-slate-400" />,
+  docHeader: <Heading className="w-4 h-4 text-indigo-600" />,
+  quoteBlock: <TextQuote className="w-4 h-4 text-sky-500" />
 };
 
 export function CustomComponentNode({ data, id, selected }: any) {
   const setSelectedNodeId = useStore(state => state.setSelectedNodeId);
-  const setEditingNodeId = useStore(state => state.setEditingNodeId);
   const deleteNode = useStore(state => state.deleteNode);
 
   return (
@@ -25,7 +36,6 @@ export function CustomComponentNode({ data, id, selected }: any) {
         selected ? "ring-2 ring-primary border-primary shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)]" : "border-border shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05),0_8px_10px_-6px_rgba(0,0,0,0.05)]"
       )}
       onClick={() => setSelectedNodeId(id)}
-      onDoubleClick={() => setEditingNodeId(id)}
     >
       <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-primary border-2 border-white" />
       <div className="flex items-center justify-between mb-3 border-b border-border pb-2">
@@ -34,11 +44,11 @@ export function CustomComponentNode({ data, id, selected }: any) {
           <span className="text-sm font-bold">{data.title}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-[#10b981]">● Online</span>
+          <span className="text-[10px] text-[#10b981]">● 在线</span>
           <button 
             onClick={(e) => { e.stopPropagation(); deleteNode(id); }} 
             className="text-muted-foreground hover:text-destructive transition-colors"
-            title="Delete Component"
+            title="删除组件"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

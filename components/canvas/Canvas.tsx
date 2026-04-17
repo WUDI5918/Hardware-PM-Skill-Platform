@@ -5,6 +5,7 @@ import {
   Controls,
   MiniMap,
   ReactFlowProvider,
+  MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useStore } from '@/store/useStore';
@@ -56,7 +57,12 @@ export function Canvas() {
         nodeTypes={nodeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        defaultEdgeOptions={{ type: 'smoothstep', animated: true }}
+        defaultEdgeOptions={{ 
+          type: 'smoothstep', 
+          animated: true,
+          markerEnd: { type: MarkerType.ArrowClosed, color: '#94a3b8' },
+          style: { stroke: '#94a3b8', strokeWidth: 2 }
+        }}
         fitView
       >
         <Background color="#cbd5e1" gap={20} size={1} />

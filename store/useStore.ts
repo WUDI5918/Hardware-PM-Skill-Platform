@@ -15,13 +15,12 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentDefinition, COMPONENT_DEFINITIONS } from '@/lib/components';
 
-export type AppNode = Node<ComponentDefinition & { data: any }>;
+export type AppNode = Node<ComponentDefinition & { data: any } & Record<string, unknown>>;
 
 interface AppState {
   nodes: AppNode[];
   edges: Edge[];
   selectedNodeId: string | null;
-  editingNodeId: string | null;
   previewMode: 'presentation' | 'document' | 'data';
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
@@ -29,7 +28,6 @@ interface AppState {
   addNode: (type: string, position: { x: number, y: number }) => void;
   updateNodeData: (id: string, newData: any) => void;
   setSelectedNodeId: (id: string | null) => void;
-  setEditingNodeId: (id: string | null) => void;
   setPreviewMode: (mode: 'presentation' | 'document' | 'data') => void;
   deleteNode: (id: string) => void;
   loadTemplate: () => void;
@@ -39,7 +37,6 @@ export const useStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeId: null,
-  editingNodeId: null,
   previewMode: 'document',
   onNodesChange: (changes: NodeChange<AppNode>[]) => {
     set({
@@ -60,17 +57,49 @@ export const useStore = create<AppState>((set, get) => ({
     const def = COMPONENT_DEFINITIONS.find(c => c.type === type);
     if (!def) return;
     
+    // Automatically determine position and edge creation
+    const currentNodes = get().nodes;
+    let newX = 250; // Fixed horizontal alignment (center-ish)
+    let newY = 50;
+    let parentNodeId: string | null = null;
+    
+    if (currentNodes.length > 0) {
+      // Find the node with the highest Y (the lowest one visually)
+      const lowestNode = currentNodes.reduce((prev, current) => 
+        (current.position.y > prev.position.y) ? current : prev
+      );
+      newX = lowestNode.position.x; // Align with the lowest node
+      newY = lowestNode.position.y + 200; // Consistent spacing
+      parentNodeId = lowestNode.id;
+    }
+
     const newNode: AppNode = {
       id: uuidv4(),
       type: 'customComponent',
-      position,
+      position: { x: newX, y: newY },
       data: {
         ...def,
         data: JSON.parse(JSON.stringify(def.defaultData))
       }
     };
     
-    set({ nodes: [...get().nodes, newNode] });
+    const newEdges = [];
+    if (parentNodeId) {
+      newEdges.push({
+        id: `e-${parentNodeId}-${newNode.id}`,
+        source: parentNodeId,
+        target: newNode.id,
+        type: 'smoothstep',
+        animated: true,
+        markerEnd: { type: 'arrowclosed', color: '#94a3b8' },
+        style: { stroke: '#94a3b8', strokeWidth: 2 }
+      });
+    }
+
+    set({ 
+      nodes: [...currentNodes, newNode],
+      edges: [...get().edges, ...newEdges]
+    });
   },
   updateNodeData: (id: string, newData: any) => {
     set({
@@ -87,7 +116,6 @@ export const useStore = create<AppState>((set, get) => ({
     });
   },
   setSelectedNodeId: (id: string | null) => set({ selectedNodeId: id }),
-  setEditingNodeId: (id: string | null) => set({ editingNodeId: id }),
   setPreviewMode: (mode) => set({ previewMode: mode }),
   deleteNode: (id: string) => {
     set((state) => ({
@@ -110,8 +138,8 @@ export const useStore = create<AppState>((set, get) => ({
         { id: 'node-3', type: 'customComponent', position: { x: 200, y: 450 }, data: { ...roadmap, data: JSON.parse(JSON.stringify(roadmap.defaultData)) } }
       ],
       edges: [
-        { id: 'e1-2', source: 'node-1', target: 'node-2', type: 'smoothstep', animated: true },
-        { id: 'e1-3', source: 'node-2', target: 'node-3', type: 'smoothstep', animated: true }
+        { id: 'e1-2', source: 'node-1', target: 'node-2', type: 'smoothstep', animated: true, markerEnd: { type: 'arrowclosed', color: '#94a3b8' }, style: { stroke: '#94a3b8', strokeWidth: 2 } },
+        { id: 'e1-3', source: 'node-2', target: 'node-3', type: 'smoothstep', animated: true, markerEnd: { type: 'arrowclosed', color: '#94a3b8' }, style: { stroke: '#94a3b8', strokeWidth: 2 } }
       ],
       selectedNodeId: null,
       previewMode: 'document'

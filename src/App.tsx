@@ -10,10 +10,11 @@ import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useStore } from '@/store/useStore';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { PropertyEditorDialog } from '@/components/preview/PropertyEditorDialog';
+import { PropertyPanel } from '@/components/preview/PropertyPanel';
 
 export default function App() {
   const loadTemplate = useStore(state => state.loadTemplate);
+  const selectedNodeId = useStore(state => state.selectedNodeId);
 
   return (
     <TooltipProvider>
@@ -24,26 +25,34 @@ export default function App() {
             <span>HPM | SkillBlock</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Project: SmartWatch Pro Gen.3</span>
-            <div className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-xs font-semibold">DVT Phase</div>
-            <button onClick={loadTemplate} className="px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors border-none rounded-md font-semibold text-[13px]">Load Template</button>
-            <button className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors border-none rounded-md font-semibold text-[13px]">Export PRD</button>
+            <span className="text-sm text-muted-foreground">项目: SmartWatch Pro Gen.3</span>
+            <div className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-xs font-semibold">DVT 阶段</div>
+            <button onClick={loadTemplate} className="px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors border-none rounded-md font-semibold text-[13px]">加载模板</button>
+            <button className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors border-none rounded-md font-semibold text-[13px]">导出 PRD</button>
           </div>
         </header>
         <main className="flex-1 flex overflow-hidden min-h-0">
           <Sidebar />
           <ResizablePanelGroup direction="horizontal" className="flex-1">
-            <ResizablePanel defaultSize={65} minSize={30}>
+            <ResizablePanel defaultSize={50} minSize={30}>
               <CanvasWrapper />
             </ResizablePanel>
+            
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={35} minSize={20} collapsible={true} collapsedSize={0}>
+            
+            <ResizablePanel defaultSize={25} minSize={20} collapsible={true} collapsedSize={0}>
+              <PropertyPanel />
+            </ResizablePanel>
+            
+            <ResizableHandle withHandle />
+            
+            <ResizablePanel defaultSize={25} minSize={20} collapsible={true} collapsedSize={0}>
               <PreviewPanel />
             </ResizablePanel>
+
           </ResizablePanelGroup>
         </main>
       </div>
-      <PropertyEditorDialog />
     </TooltipProvider>
   );
 }
