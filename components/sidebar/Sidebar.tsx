@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { COMPONENT_DEFINITIONS } from '@/lib/components';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Box, Layers, Cpu, FileText, Map, ShieldCheck, ClipboardList, GitCommit, Table, AlertTriangle, LayoutTemplate, PieChart, Scale, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen, Flag, Type, SplitSquareHorizontal, Heading, TextQuote } from 'lucide-react';
+import { Box, Layers, Cpu, FileText, Map, ShieldCheck, ClipboardList, GitCommit, Table, AlertTriangle, LayoutTemplate, PieChart, Scale, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen, Flag, Type, SplitSquareHorizontal, Heading, TextQuote, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const icons: Record<string, React.ReactNode> = {
@@ -14,7 +14,10 @@ const icons: Record<string, React.ReactNode> = {
   userRequirements: <ClipboardList className="w-4 h-4 text-indigo-500" />,
   stepBar: <GitCommit className="w-4 h-4 text-pink-500" />,
   table: <Table className="w-4 h-4 text-slate-500" />,
-  techRiskFmea: <AlertTriangle className="w-4 h-4 text-rose-500" />,
+  alertBlock: <AlertCircle className="w-4 h-4 text-orange-500" />,
+  techRiskAnalysis: <AlertTriangle className="w-4 h-4 text-rose-500" />,
+  fmeaAnalysis: <AlertTriangle className="w-4 h-4 text-rose-500" />,
+  marketAnalysis: <PieChart className="w-4 h-4 text-amber-500" />,
   productPrototype: <LayoutTemplate className="w-4 h-4 text-cyan-500" />,
   compAnalysis: <PieChart className="w-4 h-4 text-amber-500" />,
   compComparison: <Scale className="w-4 h-4 text-lime-600" />,

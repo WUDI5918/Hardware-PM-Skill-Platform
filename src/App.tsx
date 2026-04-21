@@ -14,7 +14,7 @@ import { PropertyPanel } from '@/components/preview/PropertyPanel';
 
 export default function App() {
   const loadTemplate = useStore(state => state.loadTemplate);
-  const selectedNodeId = useStore(state => state.selectedNodeId);
+  const isPropertyExpanded = useStore(state => state.isPropertyExpanded);
 
   return (
     <TooltipProvider>
@@ -34,22 +34,20 @@ export default function App() {
         <main className="flex-1 flex overflow-hidden min-h-0">
           <Sidebar />
           <ResizablePanelGroup direction="horizontal" className="flex-1">
-            <ResizablePanel defaultSize={50} minSize={30}>
+            <ResizablePanel defaultSize={65} minSize={30} className="relative">
               <CanvasWrapper />
+              {isPropertyExpanded && (
+                <div className="absolute inset-0 z-50 bg-background overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-xl">
+                  <PropertyPanel />
+                </div>
+              )}
             </ResizablePanel>
             
             <ResizableHandle withHandle />
             
-            <ResizablePanel defaultSize={25} minSize={20} collapsible={true} collapsedSize={0}>
-              <PropertyPanel />
-            </ResizablePanel>
-            
-            <ResizableHandle withHandle />
-            
-            <ResizablePanel defaultSize={25} minSize={20} collapsible={true} collapsedSize={0}>
+            <ResizablePanel defaultSize={35} minSize={20} collapsible={true} collapsedSize={0}>
               <PreviewPanel />
             </ResizablePanel>
-
           </ResizablePanelGroup>
         </main>
       </div>

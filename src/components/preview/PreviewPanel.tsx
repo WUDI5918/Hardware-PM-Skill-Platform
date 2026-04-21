@@ -35,14 +35,19 @@ function PropertyEditor({ node }: { node: any }) {
   );
 }
 
-function ComponentRenderer({ node, mode }: { node: any, mode: string }) {
+function ComponentRenderer({ node, mode }: { node: any, mode: string, [key: string]: any }) {
   const { type, data } = node.data;
   
   if (type === 'competitorRadar') {
-    const chartData = data.dimensions.map((dim: string, index: number) => {
+    const dimensions = data?.dimensions || [];
+    const competitors = data?.competitors || [];
+    
+    const chartData = dimensions.map((dim: string, index: number) => {
       const obj: any = { subject: dim };
-      data.competitors.forEach((comp: any) => {
-        obj[comp.name] = comp.scores[index];
+      competitors.forEach((comp: any) => {
+        if (comp.name && comp.scores && comp.scores[index] !== undefined) {
+          obj[comp.name] = comp.scores[index];
+        }
       });
       return obj;
     });
@@ -59,7 +64,7 @@ function ComponentRenderer({ node, mode }: { node: any, mode: string }) {
                 <PolarGrid />
                 <PolarAngleAxis dataKey="subject" />
                 <PolarRadiusAxis angle={30} domain={[0, 5]} />
-                {data.competitors.map((comp: any, i: number) => (
+                {competitors.map((comp: any, i: number) => (
                   <Radar key={comp.name} name={comp.name} dataKey={comp.name} stroke={i === 0 ? "#8884d8" : "#82ca9d"} fill={i === 0 ? "#8884d8" : "#82ca9d"} fillOpacity={0.6} />
                 ))}
                 <Legend />
@@ -72,8 +77,11 @@ function ComponentRenderer({ node, mode }: { node: any, mode: string }) {
   }
 
   if (type === 'bomCalculator') {
-    const total = data.items.reduce((acc: number, item: any) => acc + item.cost, 0);
-    const chartData = data.items.map((item: any) => ({ name: item.name, cost: item.cost }));
+    const items = data?.items || [];
+    const targetCost = data?.targetCost || 0;
+    
+    const total = items.reduce((acc: number, item: any) => acc + (item.cost || 0), 0);
+    const chartData = items.map((item: any) => ({ name: item.name || 'Unknown', cost: item.cost || 0 }));
     
     return (
       <Card className="mb-6">
@@ -88,7 +96,7 @@ function ComponentRenderer({ node, mode }: { node: any, mode: string }) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Target Cost</p>
-              <p className="text-2xl font-bold">${data.targetCost.toFixed(2)}</p>
+              <p className="text-2xl font-bold">${targetCost.toFixed(2)}</p>
             </div>
           </div>
           <div className="h-[200px] w-full">
@@ -115,7 +123,7 @@ function ComponentRenderer({ node, mode }: { node: any, mode: string }) {
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-2 gap-4">
-            {Object.entries(data).map(([key, value]) => (
+            {Object.entries(data || {}).map(([key, value]) => (
               <div key={key}>
                 <dt className="text-sm font-medium text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</dt>
                 <dd className="text-sm font-semibold">{String(value)}</dd>

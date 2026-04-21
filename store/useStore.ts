@@ -21,6 +21,7 @@ interface AppState {
   nodes: AppNode[];
   edges: Edge[];
   selectedNodeId: string | null;
+  isPropertyExpanded: boolean;
   previewMode: 'presentation' | 'document' | 'data';
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
@@ -28,6 +29,7 @@ interface AppState {
   addNode: (type: string, position: { x: number, y: number }) => void;
   updateNodeData: (id: string, newData: any) => void;
   setSelectedNodeId: (id: string | null) => void;
+  setIsPropertyExpanded: (expanded: boolean) => void;
   setPreviewMode: (mode: 'presentation' | 'document' | 'data') => void;
   deleteNode: (id: string) => void;
   loadTemplate: () => void;
@@ -37,6 +39,7 @@ export const useStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeId: null,
+  isPropertyExpanded: false,
   previewMode: 'document',
   onNodesChange: (changes: NodeChange<AppNode>[]) => {
     set({
@@ -105,10 +108,11 @@ export const useStore = create<AppState>((set, get) => ({
     set({
       nodes: get().nodes.map(node => {
         if (node.id === id) {
-          // If newData has a title, update the node's title as well as its data
-          if (newData.title) {
+          // Check if newData is an envelope (contains title and data separately)
+          if (newData && typeof newData === 'object' && 'title' in newData && 'data' in newData) {
             return { ...node, data: { ...node.data, title: newData.title, data: newData.data } };
           }
+          // Otherwise update just the internal data
           return { ...node, data: { ...node.data, data: newData } };
         }
         return node;
@@ -116,12 +120,14 @@ export const useStore = create<AppState>((set, get) => ({
     });
   },
   setSelectedNodeId: (id: string | null) => set({ selectedNodeId: id }),
+  setIsPropertyExpanded: (expanded: boolean) => set({ isPropertyExpanded: expanded }),
   setPreviewMode: (mode) => set({ previewMode: mode }),
   deleteNode: (id: string) => {
     set((state) => ({
       nodes: state.nodes.filter((node) => node.id !== id),
       edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id),
       selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
+      isPropertyExpanded: state.selectedNodeId === id ? false : state.isPropertyExpanded,
     }));
   },
   loadTemplate: () => {
